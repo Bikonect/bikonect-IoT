@@ -76,14 +76,12 @@ void displayInfo() {
   if (gps.location.isValid()) {
     Serial.print(gps.location.lat(), 6);
     Serial.print(",");
-    Serial.print(gps.location.lng(), 6);
+    Serial.println(gps.location.lng(), 6);
 
     enviaLocalizacao(gps.location.lat(), gps.location.lng());
   } else {
-    Serial.print("ERRO");
+    Serial.println("ERRO");
   }
-
-  Serial.println();
 }
 
 String floatToString(float x, byte precision = 6) {
@@ -95,10 +93,64 @@ String floatToString(float x, byte precision = 6) {
 void enviaLocalizacao(float latitude, float longitude) {
   String txtLatitude = floatToString(latitude);
   String txtLongitude = floatToString(longitude);
-
+  
   Serial.println("------------------------------------------------------");
 
+  Serial_GPRS.listen();
   Serial.println("Enviando localizacao para o servidor");
+  
+  Serial_GPRS.println("AT");
+
+  delay(100);
+  ShowSerialData();
+
+  Serial_GPRS.println("AT+SAPBR=3,1,\"Contype\",\"GPRS\"");
+  delay(1000);
+  ShowSerialData();
+
+  Serial_GPRS.println("AT+SAPBR=3,1,\"APN\",\"timbrasil.br\"");
+  delay(4000);
+  ShowSerialData();
+
+  Serial_GPRS.println("AT+SAPBR=3,1,\"USER\",\"tim\"");
+  delay(4000);
+  ShowSerialData();
+
+  Serial_GPRS.println("AT+SAPBR=3,1,\"PWD\",\"tim\"");
+  delay(4000);
+  ShowSerialData();
+
+  Serial_GPRS.println("AT+SAPBR=1,1");
+  delay(2000);
+  ShowSerialData();
+
+  Serial_GPRS.println("AT+SAPBR=2,1");
+  delay(2000);
+  ShowSerialData();
+
+  Serial_GPRS.println("AT+HTTPINIT");
+  delay(2000);
+  ShowSerialData();
+
+  Serial_GPRS.println("AT+HTTPPARA=\"CID\",1");
+  delay(2000);
+  ShowSerialData();
+
+  Serial_GPRS.print("AT+HTTPPARA=\"URL\",\"localhost/add.php?field1="+ txtLatitude +"&fiel2="+ txtLongitude +"\"");
+  delay(1000);
+  ShowSerialData();
+
+  Serial_GPRS.println("AT+HTTPACTION=0");
+  delay(10000);
+  ShowSerialData();
+
+  Serial_GPRS.println("AT+HTTPREAD");
+  delay(100);
+  ShowSerialData(); 
+
+  Serial_GPRS.println("AT+HTTPTERM");
+  delay(100);
+  ShowSerialData(); 
 
   Serial.println("------------------------------------------------------");
 
@@ -109,4 +161,10 @@ void enviaLocalizacao(float latitude, float longitude) {
   digitalWrite(LED, HIGH);
   delay(100);
   digitalWrite(LED, LOW);
+}
+
+void ShowSerialData() {
+  while (Serial_GPRS.available() != 0) {
+    Serial.write(Serial_GPRS.read());
+  }
 }

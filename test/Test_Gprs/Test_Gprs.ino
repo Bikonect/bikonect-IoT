@@ -52,7 +52,7 @@ void loop() {
   delay(2000);
   ShowSerialData();
 
-  serialSIM800.print("AT+HTTPPARA=\"URL\",\"localhost/add.php?MSG_Texto1=teste3\\"");
+  serialSIM800.print("AT+HTTPPARA=\"URL\",\"localhost/add.php?MSG_Texto1=teste3\"");
   delay(1000);
   ShowSerialData();
 
