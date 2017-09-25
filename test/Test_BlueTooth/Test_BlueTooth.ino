@@ -9,6 +9,9 @@ void loop() {
     int key = Serial.read();
     int val = Serial.read();
 
+    Serial.println(key);
+    Serial.println(val);
+
     digitalWrite(key, val);
   }
 }
