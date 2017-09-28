@@ -1,29 +1,30 @@
 #include <Servo.h>
+#include <SoftwareSerial.h>
 
-#define SERVO_1 5
-#define SERVO_2 6
+#define SERVO 5
+#define LED 13
+#define BLUETOOTH_RX 0
+#define BLUETOOTH_TX 1
 
-Servo servo1;
-Servo servo2;
+SoftwareSerial BlueTooth(BLUETOOTH_RX, BLUETOOTH_TX);
+Servo servo;
 
 int pos;
 
 void setup() {
-  servo1.attach(SERVO_1);
-  servo2.attach(SERVO_2);
-  
   Serial.begin(9600);
-
-  servo1.write(0);
-  servo2.write(0);
+  BlueTooth.begin(9600);
   
-  pinMode(13, OUTPUT);
+  servo.attach(SERVO);
+  servo.write(0);
+  
+  pinMode(LED, OUTPUT);
 }
 
 void loop() {
-  if (Serial.available() >= 2) {
-    int key = Serial.read();
-    int val = Serial.read();
+  if (BlueTooth.available() >= 2) {
+    int key = BlueTooth.read();
+    int val = BlueTooth.read();
 
     digitalWrite(key, val);
 
@@ -37,8 +38,7 @@ void loop() {
 
 void bloqTrava() {
   for (pos = 0; pos < 90; pos++) {
-    servo1.write(pos);
-    servo2.write(pos);
+    servo.write(pos);
     delay(1);
   }
   
@@ -47,8 +47,7 @@ void bloqTrava() {
 
 void desbloqTrava() {
   for (pos = 90; pos >= 0; pos--) {
-    servo1.write(pos);
-    servo2.write(pos);
+    servo.write(pos);
     delay(1);
   }
 
