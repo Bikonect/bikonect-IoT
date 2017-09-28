@@ -1,27 +1,34 @@
 #include <Servo.h>
+#include <SoftwareSerial.h>
 
-#define PINSERVO 6
-#define PINPWD 13
+#define SERVO 5
+#define LED 13
+#define BLUETOOTH_RX 0
+#define BLUETOOTH_TX 1
 
+SoftwareSerial BlueTooth(BLUETOOTH_RX, BLUETOOTH_TX);
 Servo servo;
+
 int pos;
 
 void setup() {
-  servo.attach(PINSERVO);
-
   Serial.begin(9600);
-
+  BlueTooth.begin(9600);
+  
+  servo.attach(SERVO);
   servo.write(0);
-
-  pinMode(PINPWD, OUTPUT);
+  
+  pinMode(LED, OUTPUT);
 }
 
 void loop() {
-  if (Serial.available() >= 2) {
-    int key = Serial.read();
-    int val = Serial.read();
+  if (BlueTooth.available() >= 2) {
+    int key = BlueTooth.read();
+    int val = BlueTooth.read();
 
-    if (val == 0) {
+    digitalWrite(key, val);
+
+    if (val == 1) {
       bloqTrava();
     } else {
       desbloqTrava();
@@ -35,7 +42,6 @@ void bloqTrava() {
     delay(1);
   }
   
-  digitalWrite(PINPWD, HIGH);
   delay(1000);
 }
 
@@ -45,6 +51,5 @@ void desbloqTrava() {
     delay(1);
   }
 
-  digitalWrite(PINPWD, LOW);
   delay(1000);
 }
